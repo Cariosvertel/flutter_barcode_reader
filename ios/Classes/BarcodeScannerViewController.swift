@@ -78,7 +78,9 @@ class BarcodeScannerViewController: UIViewController {
                                                         target: self,
                                                         action: #selector(cancel)
     )
+    self.navigationController?.setNavigationBarHidden(true, animated: true)
     updateToggleFlashButton()
+    addSkipButton()
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -130,6 +132,21 @@ class BarcodeScannerViewController: UIViewController {
       view.addSubview(scanRect)
       scanRect.startAnimating()
     }
+  }
+  private func addSkipButton(){
+    print("adding skip button")
+    let button = UIButton();
+    let image = UIImage(named: "ic_skip_button")
+    print("image size:\(image?.size.width)")
+    button.setBackgroundImage(image, for: .normal)
+//    button.backgroundColor = UIColor.yellow
+    button.translatesAutoresizingMaskIntoConstraints = false;
+    self.view.addSubview(button)
+    button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 28).isActive = true;
+    button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -28).isActive = true;
+    button.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+    
   }
   
   private func startScan() {
