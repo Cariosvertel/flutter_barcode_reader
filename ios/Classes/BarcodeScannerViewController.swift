@@ -8,6 +8,7 @@
 import Foundation
 import MTBBarcodeScanner
 
+
 class BarcodeScannerViewController: UIViewController {
   private var previewView: UIView?
   private var scanRect: ScannerOverlay?
@@ -53,7 +54,6 @@ class BarcodeScannerViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
     #if targetEnvironment(simulator)
     view.backgroundColor = .lightGray
     #endif
@@ -136,18 +136,52 @@ class BarcodeScannerViewController: UIViewController {
   private func addSkipButton(){
     print("adding skip button")
     let button = UIButton();
-    let image = UIImage(named: "ic_skip_button")
-    print("image size:\(image?.size.width)")
-    button.setBackgroundImage(image, for: .normal)
-//    button.backgroundColor = UIColor.yellow
+    let bundle = Bundle(for:BarcodeScannerViewController.self)
+    // set selection background image
+    let normalImage = UIImage(named: "ic_skip_button", in: bundle, compatibleWith: nil)
+    let selectedImage = UIImage(named: "ic_skip_button_selected", in: bundle, compatibleWith: nil)
+    
+    button.setBackgroundImage(normalImage, for: .normal)
+    button.setBackgroundImage(selectedImage, for: .highlighted)
+    // set button Font
+    
+    if let font = BarcodeScannerViewController.openSansFont{
+      let title = "Skip"
+      let attribString = NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: UIColor.black])
+      button.setAttributedTitle(attribString, for: .normal)
+      let selectedTitle = NSAttributedString(string:title, attributes: [NSAttributedString.Key.font:font, NSAttributedString.Key.foregroundColor: UIColor.white])
+      button.setAttributedTitle(selectedTitle, for: .highlighted)
+    }
+    button.addTarget(self, action: #selector(didTapOnSkip), for: .touchUpInside)
+    // add button to view
     button.translatesAutoresizingMaskIntoConstraints = false;
     self.view.addSubview(button)
     button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 28).isActive = true;
     button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -28).isActive = true;
     button.heightAnchor.constraint(equalToConstant: 60).isActive = true
-    button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-    
+    button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -40).isActive = true
   }
+  
+  @objc private  func didTapOnSkip(){
+    let result = try! ScanResult(serializedData: Data());
+    self.scanResult(result)
+  }
+  static let openSansFont:UIFont? = {
+    
+    let bundleUrl = Bundle(for: BarcodeScannerViewController.self).url(forResource: "MyFonts", withExtension: "bundle")
+    let bundle = Bundle(url: bundleUrl!)
+    let fontUrl = bundle!.url(forResource: "OpenSans-Bold", withExtension: "ttf")
+    let fontData = try! Data(contentsOf: fontUrl!)
+    let provider = CGDataProvider(data: fontData as CFData)
+    let font = CGFont(provider!)
+    
+    if(font != nil){
+      var error:UnsafeMutablePointer<Unmanaged<CFError>?>?
+      if(CTFontManagerRegisterGraphicsFont(font!, error)){
+      }
+    }
+    return UIFont(name: "OpenSans-Bold", size: 16)!
+  }()
   
   private func startScan() {
     do {
