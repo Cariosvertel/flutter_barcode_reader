@@ -80,7 +80,7 @@ class BarcodeScannerViewController: UIViewController {
     )
     self.navigationController?.setNavigationBarHidden(true, animated: true)
     updateToggleFlashButton()
-    addSkipButton()
+    addSkipButton(title:config.strings["cancel"] ?? "Skip")
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -133,7 +133,7 @@ class BarcodeScannerViewController: UIViewController {
       scanRect.startAnimating()
     }
   }
-  private func addSkipButton(){
+  private func addSkipButton(title:String){
     print("adding skip button")
     let button = UIButton();
     let bundle = Bundle(for:BarcodeScannerViewController.self)
@@ -146,7 +146,7 @@ class BarcodeScannerViewController: UIViewController {
     // set button Font
     
     if let font = BarcodeScannerViewController.openSansFont{
-      let title = "Skip"
+      let title = title
       let attribString = NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: UIColor.black])
       button.setAttributedTitle(attribString, for: .normal)
       let selectedTitle = NSAttributedString(string:title, attributes: [NSAttributedString.Key.font:font, NSAttributedString.Key.foregroundColor: UIColor.white])
