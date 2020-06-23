@@ -39,6 +39,8 @@ class ChannelHandler(private val activityHelper: ActivityHelper
                 .build()
 
         if (call.arguments is ByteArray) {
+            val stringValue = String(call.arguments as ByteArray)
+            print("RESULT: $stringValue")
             config = Protos.Configuration.parseFrom(call.arguments as ByteArray)
         }
         activityHelper.showScannerActivity(result, config)

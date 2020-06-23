@@ -1,13 +1,21 @@
 package de.mintware.barcode_scan
 
+import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
+import android.os.Build.VERSION_CODES.KITKAT
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
+
 
 class BarcodeScannerActivity : Activity(), ZXingScannerView.ResultHandler {
 
@@ -24,6 +32,7 @@ class BarcodeScannerActivity : Activity(), ZXingScannerView.ResultHandler {
         const val EXTRA_CONFIG = "config"
         const val EXTRA_RESULT = "scan_result"
         const val EXTRA_ERROR_CODE = "error_code"
+        var currentApiVersion:Int = 0
 
         private val formatMap: Map<Protos.BarcodeFormat, BarcodeFormat> = mapOf(
                 Protos.BarcodeFormat.aztec to BarcodeFormat.AZTEC,
@@ -46,6 +55,45 @@ class BarcodeScannerActivity : Activity(), ZXingScannerView.ResultHandler {
         super.onCreate(savedInstanceState)
 
         config = Protos.Configuration.parseFrom(intent.extras!!.getByteArray(EXTRA_CONFIG))
+
+        currentApiVersion = Build.VERSION.SDK_INT
+
+        val flags: Int = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+
+        // This work only for android 4.4+
+        // This work only for android 4.4+
+        if (currentApiVersion >= KITKAT) {
+            window.decorView.systemUiVisibility = flags
+            // Code below is to handle presses of Volume up or Volume down.
+        // Without this, after pressing volume buttons, the navigation bar will
+        // show up and won't hide
+            val decorView: View = window.decorView
+            decorView.setOnSystemUiVisibilityChangeListener(object : View.OnSystemUiVisibilityChangeListener{
+                        override  fun onSystemUiVisibilityChange(visibility: Int) {
+                            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN === 0) {
+                                decorView.setSystemUiVisibility(flags)
+                            }
+                        }
+                    })
+        }
+    }
+
+    @SuppressLint("NewApi")
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (currentApiVersion >= KITKAT && hasFocus) {
+            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        }
     }
 
     private fun setupScannerView() {
@@ -66,23 +114,42 @@ class BarcodeScannerActivity : Activity(), ZXingScannerView.ResultHandler {
                 flash = config.autoEnableFlash
                 invalidateOptionsMenu()
             }
+            config.autoEnableFlash
         }
-
-        setContentView(scannerView)
+        val title = config.getStringsOrDefault("cancel", "Skip")
+        val skipButton = createSkipButton(title)
+        val mainContentView = createContentView()
+        mainContentView.addView(scannerView)
+        mainContentView.addView(skipButton)
+        setContentView(mainContentView)
     }
+    fun createSkipButton(title:String):Button{
+        val button = LayoutInflater.from(this).inflate(R.layout.skip_button, null) as Button
+        button.text = title
+        val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 154)
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        params.addRule(RelativeLayout.CENTER_HORIZONTAL)
+        params.marginStart = 58
+        params.marginEnd = 58
+        params.bottomMargin = 10
+        button.layoutParams = params
+        val skipValue = ""
+        button.setOnClickListener {
+            intent.putExtra(EXTRA_RESULT, skipValue.toByteArray())
+            setResult(RESULT_OK, intent)
+            finish()
+        }
+        return button
+    }
+    fun createContentView():RelativeLayout{
+        val layout = RelativeLayout(this);
+        layout.layoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        return layout
+    }
+
 
     // region AppBar menu
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        var buttonText = config.stringsMap["flash_on"]
-        if (scannerView?.flash == true) {
-            buttonText = config.stringsMap["flash_off"]
-        }
-        val flashButton = menu.add(0, TOGGLE_FLASH, 0, buttonText)
-        flashButton.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-
-        val cancelButton = menu.add(0, CANCEL, 0, config.stringsMap["cancel"])
-        cancelButton.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-
         return super.onCreateOptionsMenu(menu)
     }
 

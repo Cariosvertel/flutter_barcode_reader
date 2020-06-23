@@ -33,6 +33,7 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         main.proto.srcDirs += '../protos'
+        main.assets.srcDirs = ['assets', 'src/main/assets', 'src/main/assets/']
     }
     defaultConfig {
         minSdkVersion 18
