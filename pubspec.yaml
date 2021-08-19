@@ -4,15 +4,15 @@ version: 3.0.1
 homepage: https://github.com/mintware-de/flutter_barcode_reader
 
 dependencies:
-  protobuf: ^1.0.1
+  protobuf: ^2.0.0
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  effective_dart: ^1.2.0
+  effective_dart: ^1.3.2
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 flutter:
   plugin:

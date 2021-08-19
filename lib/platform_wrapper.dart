@@ -39,7 +39,7 @@ class BarcodeScanner {
     var events = _eventChannel.receiveBroadcastStream();
     var completer = Completer<ScanResult>();
 
-    StreamSubscription subscription;
+    late StreamSubscription subscription;
     subscription = events.listen((event) async {
       if (event is String) {
         if (event == cameraAccessGranted) {
@@ -86,7 +86,7 @@ class BarcodeScanner {
 
   /// Returns the number of cameras which are available
   /// Use n-1 as the index of the camera which should be used.
-  static Future<int> get numberOfCameras {
+  static Future<int?> get numberOfCameras {
     return _channel.invokeMethod('numberOfCameras');
   }
 }
