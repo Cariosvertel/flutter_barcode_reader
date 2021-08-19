@@ -22,7 +22,7 @@ class _MyAppState extends State<_MyApp> {
   final _cancelController = TextEditingController(text: "Cancel");
 
   var _aspectTolerance = 0.00;
-  var _numberOfCameras = 0;
+  int _numberOfCameras = 0;
   var _selectedCamera = -1;
   bool? _useAutoFocus = true;
   bool? _autoEnableFlash = false;
@@ -38,7 +38,7 @@ class _MyAppState extends State<_MyApp> {
     super.initState();
 
     Future.delayed(Duration.zero, () async {
-      _numberOfCameras = await BarcodeScanner.numberOfCameras;
+      _numberOfCameras = await BarcodeScanner.numberOfCameras ?? 0;
       setState(() {});
     });
   }
