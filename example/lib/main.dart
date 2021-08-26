@@ -15,7 +15,7 @@ class _MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<_MyApp> {
-  ScanResult? scanResult;
+  ScanResult scanResult;
 
   final _flashOnController = TextEditingController(text: "Flash on");
   final _flashOffController = TextEditingController(text: "Flash off");
@@ -24,8 +24,8 @@ class _MyAppState extends State<_MyApp> {
   var _aspectTolerance = 0.00;
   int _numberOfCameras = 0;
   var _selectedCamera = -1;
-  bool? _useAutoFocus = true;
-  bool? _autoEnableFlash = false;
+  bool _useAutoFocus = true;
+  bool _autoEnableFlash = false;
 
   static final _possibleFormats = BarcodeFormat.values.toList()
     ..removeWhere((e) => e == BarcodeFormat.unknown);
@@ -52,19 +52,19 @@ class _MyAppState extends State<_MyApp> {
             children: <Widget>[
               ListTile(
                 title: Text("Result Type"),
-                subtitle: Text(scanResult!.type?.toString() ?? ""),
+                subtitle: Text(scanResult.type?.toString() ?? ""),
               ),
               ListTile(
                 title: Text("Raw Content"),
-                subtitle: Text(scanResult!.rawContent ?? ""),
+                subtitle: Text(scanResult.rawContent ?? ""),
               ),
               ListTile(
                 title: Text("Format"),
-                subtitle: Text(scanResult!.format?.toString() ?? ""),
+                subtitle: Text(scanResult.format?.toString() ?? ""),
               ),
               ListTile(
                 title: Text("Format note"),
-                subtitle: Text(scanResult!.formatNote ?? ""),
+                subtitle: Text(scanResult.formatNote ?? ""),
               ),
             ],
           ),
@@ -250,10 +250,10 @@ class _MyAppState extends State<_MyApp> {
         },
         restrictFormat: selectedFormats,
         useCamera: _selectedCamera,
-        autoEnableFlash: _autoEnableFlash!,
+        autoEnableFlash: _autoEnableFlash,
         android: AndroidOptions(
           aspectTolerance: _aspectTolerance,
-          useAutoFocus: _useAutoFocus!,
+          useAutoFocus: _useAutoFocus,
         ),
       );
 
