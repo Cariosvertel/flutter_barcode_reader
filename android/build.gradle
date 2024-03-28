@@ -50,22 +50,22 @@ protobuf {
     // Configure the protoc executable
     protoc {
         // Download from repositories
-        if (project.hasProperty('protoc_platform')) {
-            artifact = "com.google.protobuf:protoc:3.11.4:osx-x86_64"
-        } else {
-            artifact = "com.google.protobuf:protoc:3.11.4:osx-x86_64"
-        }
+        // if (project.hasProperty('protoc_platform')) {
+        //     artifact = "com.google.protobuf:protoc:3.11.4:${protoc_platform}"
+        // } else {
+            artifact = "com.google.protobuf:protoc:3.13.0:osx-x86_64"
+        // }
         // artifact = 'com.google.protobuf:protoc:3.11.4'
     }
     plugins {
         javalite {
             // The codegen for lite comes as a separate artifact
             // artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
-            if (project.hasProperty('protoc_platform')) {
+            // if (project.hasProperty('protoc_platform')) {
+                // artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0:${protoc_platform}"
+            // } else {
                 artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0:osx-x86_64"
-            } else {
-                artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
-            }
+            // }
         }
     }
     generateProtoTasks {
